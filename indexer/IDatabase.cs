@@ -8,6 +8,9 @@ namespace Indexer
         //Get all words with key as the value, and the value as the id 
         Dictionary<string, int> GetAllWords();
 
+        // Get the most frequent words in the database, ordered by frequency
+        List<(string Name, int Frequency)> GetMostFrequent(int rows);
+
         // Return the number of documents indexed in the database
         int DocumentCounts { get; }
 

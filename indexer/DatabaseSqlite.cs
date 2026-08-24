@@ -38,6 +38,38 @@ namespace Indexer
             Execute("CREATE INDEX word_index ON Occ (wordId)");
         }
 
+        public List<(string Name, int Frequency)> GetMostFrequent(int rows)
+        {
+            var result = new List<(string, int)>();
+
+            // LAver en sql query der henter de mest hyppige ord og deres frekvens
+            // Kan laves med sqlite 
+            var cmd = _connection.CreateCommand();
+            cmd.CommandText = @"
+                                    SELECT word.name, COUNT(Occ.wordId) AS frequency
+                                    FROM word
+                                    JOIN Occ ON word.id = Occ.wordId
+                                    GROUP BY word.id
+                                    ORDER BY frequency DESC
+                                    LIMIT @rows";
+
+            cmd.Parameters.AddWithValue("@rows", rows);
+
+            // Udfører kommandoen og får et reader objekt
+            using var reader = cmd.ExecuteReader();
+
+            // Læser alle rækker fra resultatsættet
+            while (reader.Read())
+            {
+                result.Add((
+                    reader.GetString(0),
+                    reader.GetInt32(1)
+                ));
+            }
+
+            return result;
+        }
+
         private void Execute(string sql)
         {
             var cmd = _connection.CreateCommand();
@@ -103,7 +135,7 @@ namespace Indexer
                 transaction.Commit();
             }
         }
-        
+
 
         public void InsertDocument(BEDocument doc)
         {

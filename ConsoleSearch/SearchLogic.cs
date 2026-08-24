@@ -16,7 +16,7 @@ namespace ConsoleSearch
         /* Perform search of documents containing words from query. The result will
          * contain details about amost maxAmount of documents.
          */
-        public SearchResult Search(String[] query, int maxAmount)
+        public SearchResult Search(String[] query, int maxAmount, bool caseSensitive)
         {
             List<string> ignored;
 

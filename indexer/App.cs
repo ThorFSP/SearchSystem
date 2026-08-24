@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using Shared;
+using System.Diagnostics;
 
 namespace Indexer
 {
@@ -9,6 +10,7 @@ namespace Indexer
     {
         public void Run()
         {
+
             IDatabase db = GetDatabase();
             Crawler crawler = new Crawler(db);
 
@@ -16,7 +18,7 @@ namespace Indexer
 
             DateTime start = DateTime.Now;
 
-            crawler.IndexFilesIn(root, new List<string> { ".txt"});        
+            crawler.IndexFilesIn(root, new List<string> { ".txt" });
 
             TimeSpan used = DateTime.Now - start;
             Console.WriteLine("DONE! used " + used.TotalMilliseconds);
@@ -27,11 +29,18 @@ namespace Indexer
             Console.WriteLine($"Number of different words: {all.Count}");
             int count = 10;
             Console.WriteLine($"The first {count} is:");
-            foreach (var p in all) {
+            foreach (var p in all)
+            {
                 Console.WriteLine("<" + p.Key + ", " + p.Value + ">");
                 count--;
                 if (count == 0) break;
             }
+
+            Console.WriteLine("Hvor mange ord vil du se - inddelt efter hyppighed?");
+            var numberOfWords = Console.ReadLine();
+
+            MostFrequentWords(int.Parse(numberOfWords), db);
+
         }
 
         private IDatabase GetDatabase()
@@ -44,6 +53,14 @@ namespace Indexer
                 return new DatabasePostgres();
             Console.WriteLine("Wrong input - try again...");
             return GetDatabase();
+        }
+
+        public void MostFrequentWords(int rows, IDatabase db)
+        {
+            var words = db.GetMostFrequent(rows);
+
+            foreach (var word in words)
+                Console.WriteLine($"<{word.Name}> - {word.Frequency}");
         }
     }
 }

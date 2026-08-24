@@ -1,4 +1,5 @@
 ﻿using System;
+using SearchSystem.Shared.Model;
 
 namespace ConsoleSearch
 {
@@ -9,18 +10,30 @@ namespace ConsoleSearch
         {
             IDatabase db = GetDatabase();
             SearchLogic mSearchLogic = new SearchLogic(db);
+            Configs configs = new Configs();
             Console.WriteLine("Console Search");
             
             while (true)
             {
                 Console.WriteLine("enter search terms - q for quit");
+                Console.WriteLine("type \"help\" for configs");
                 string input = Console.ReadLine();
                 if (input.Equals("q")) break;
+                if (input.Equals("help")) {
+                    GetConfigs(configs);
+                    continue;
+                }
+                if (input.Equals("case")) {
+                    // Toggle 
+                    configs.IsCaseSensitive = !configs.IsCaseSensitive;
+                    Console.WriteLine("IsCaseSensitive = " + configs.IsCaseSensitive);
+                    continue;
+                }
 
                 var query = input.Split(" ", StringSplitOptions.RemoveEmptyEntries);
                
 
-                var result = mSearchLogic.Search(query, 10);
+                var result = mSearchLogic.Search(query, 10, configs.IsCaseSensitive);
 
                 if (result.Ignored.Count > 0) {
                     Console.WriteLine($"Ignored: {string.Join(',', result.Ignored)}");
@@ -47,6 +60,12 @@ namespace ConsoleSearch
                 return new DatabasePostgres();
             Console.WriteLine("Wrong input - try again...");
             return GetDatabase();
+        }
+
+        public void GetConfigs(Configs configs)
+        {
+            Console.WriteLine("Configs:");
+            Console.WriteLine("IsCaseSensitive = " + configs.IsCaseSensitive + " (type \"case\" to toggle)");
         }
 
         string ArrayAsString(string[] s) => s.Length == 0?"[]":$"[{String.Join(',', s)}]";
