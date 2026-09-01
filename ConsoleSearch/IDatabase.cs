@@ -9,7 +9,7 @@ namespace ConsoleSearch
         /// Get id's for words in [query]. [outIgnored] contains those word from query that is
         /// not present in any document.
         /// </summary>
-        List<int> GetWordIds(string[] query, out List<string> outIgnored);
+        List<int> GetWordIds(string[] query, out List<string> outIgnored, bool caseSensitive = false);
 
         /// <summary>
         /// Get document by its id
@@ -34,6 +34,6 @@ namespace ConsoleSearch
         /// Convert a list of word id's to a list of the value of the
         /// words
         /// </summary>
-        List<string> WordsFromIds(List<int> wordIds);
+        List<string> WordsFromIds(List<int> wordIds, bool caseSensitive = false);
     }
 }

@@ -23,7 +23,7 @@ namespace ConsoleSearch
             DateTime start = DateTime.Now;
 
             // Convert words to wordids
-            var wordIds = mDatabase.GetWordIds(query, out ignored);
+            var wordIds = mDatabase.GetWordIds(query, out ignored, caseSensitive);
 
             if (wordIds.Count == 0) // no words know in index
                  return new SearchResult(query, 0, new List<DocumentHit>(), ignored, DateTime.Now - start);

@@ -11,6 +11,7 @@ namespace ConsoleSearch
         private SqliteConnection _connection;
 
         private Dictionary<string, int> mWords = null;
+        private Dictionary<string, List<int>> mWordsIgnoreCase = null;
 
         public DatabaseSqlite()
         {
@@ -67,7 +68,7 @@ namespace ConsoleSearch
 
 
 
-       
+
 
         private Dictionary<string, int> GetAllWords()
         {
@@ -88,7 +89,7 @@ namespace ConsoleSearch
             }
             return res;
         }
-        
+
         public BEDocument GetDocDetails(int docId)
         {
             var selectCmd = _connection.CreateCommand();
@@ -138,10 +139,12 @@ namespace ConsoleSearch
             return result;
         }
 
-        public List<string> WordsFromIds(List<int> wordIds)
+        public List<string> WordsFromIds(List<int> wordIds, bool caseSensitive = false)
         {
             var sql = "SELECT name FROM Word where ";
             sql += "id in " + AsString(wordIds);
+            if (!caseSensitive)
+                sql += " COLLATE NOCASE";
 
             var selectCmd = _connection.CreateCommand();
             selectCmd.CommandText = sql;
@@ -159,22 +162,47 @@ namespace ConsoleSearch
             return result;
         }
 
-        public List<int> GetWordIds(string[] query, out List<string> outIgnored)
+        public List<int> GetWordIds(string[] query, out List<string> outIgnored, bool caseSensitive)
         {
             if (mWords == null)
+            {
                 mWords = GetAllWords();
+                mWordsIgnoreCase = new Dictionary<string, List<int>>(StringComparer.OrdinalIgnoreCase);
+                foreach (var kvp in mWords)
+                {
+                    if (!mWordsIgnoreCase.TryGetValue(kvp.Key, out var ids))
+                    {
+                        ids = new List<int>();
+                        mWordsIgnoreCase[kvp.Key] = ids;
+                    }
+                    ids.Add(kvp.Value);
+                }
+            }
+
             var res = new List<int>();
             var ignored = new List<string>();
 
             foreach (var aWord in query)
             {
-                if (mWords.ContainsKey(aWord))
-                    res.Add(mWords[aWord]);
+                if (caseSensitive)
+                {
+                    if (mWords.TryGetValue(aWord, out int id))
+                        res.Add(id);
+                    else
+                        ignored.Add(aWord);
+                }
                 else
-                    ignored.Add(aWord);
+                {
+                    if (mWordsIgnoreCase.TryGetValue(aWord, out var ids))
+                        res.AddRange(ids);
+                    else
+                        ignored.Add(aWord);
+                }
             }
+
             outIgnored = ignored;
             return res;
         }
+
     }
 }

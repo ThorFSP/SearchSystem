@@ -57,7 +57,7 @@ namespace Indexer
 
         public void MostFrequentWords(int rows, IDatabase db)
         {
-            var words = db.GetMostFrequent(rows);
+            var words = db.GetMostFrequent(rows);   
 
             foreach (var word in words)
                 Console.WriteLine($"<{word.Name}> - {word.Frequency}");
