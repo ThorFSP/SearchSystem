@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using Shared;
 using Shared.Model;
 
 namespace ConsoleSearch
 {
     public class SearchLogic
     {
-        IDatabase mDatabase;
+        ISearchDatabase mDatabase;
 
-        public SearchLogic(IDatabase database)
+        public SearchLogic(ISearchDatabase database)
         {
             mDatabase = database;
         }

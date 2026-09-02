@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using Shared.Model;
 
-namespace ConsoleSearch
+namespace Shared
 {
-    public interface IDatabase
+    public interface ISearchDatabase
     {
         /// <summary>
         /// Get id's for words in [query]. [outIgnored] contains those word from query that is

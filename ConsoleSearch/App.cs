@@ -1,5 +1,6 @@
 ﻿using System;
-using SearchSystem.Shared.Model;
+using Shared;
+using Shared.Model;
 
 namespace ConsoleSearch
 {
@@ -8,7 +9,7 @@ namespace ConsoleSearch
 
         public void Run()
         {
-            IDatabase db = GetDatabase();
+            ISearchDatabase db = GetDatabase();
             SearchLogic mSearchLogic = new SearchLogic(db);
             Configs configs = new Configs();
             Console.WriteLine("Console Search");
@@ -50,14 +51,14 @@ namespace ConsoleSearch
             }
         }
         
-        private IDatabase GetDatabase()
+        private ISearchDatabase GetDatabase()
         {
             Console.Write("Use SQLite (1) or Postgres (2) database?");
             string input = Console.ReadLine();
             if (input.Equals("1"))
-                return new DatabaseSqlite();
+                return new Shared.DatabaseSqlite();
             else if (input.Equals("2"))
-                return new DatabasePostgres();
+                return new Shared.DatabasePostgres();
             Console.WriteLine("Wrong input - try again...");
             return GetDatabase();
         }

@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using Shared.Model;
 
-namespace Indexer
+namespace Shared
 {
-    public interface IDatabase
+    public interface IIndexDatabase
     {
         //Get all words with key as the value, and the value as the id 
         Dictionary<string, int> GetAllWords();

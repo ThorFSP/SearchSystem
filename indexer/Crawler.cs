@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using Shared;
 using Shared.Model;
 
 namespace Indexer
@@ -18,9 +19,9 @@ namespace Indexer
         private int documentCounter = 0;
         /* Will count the number of documents indexed during indexing */
 
-        IDatabase mdatabase;
+        IIndexDatabase mdatabase;
 
-        public Crawler(IDatabase db){ mdatabase = db; }
+        public Crawler(IIndexDatabase db){ mdatabase = db; }
 
         //Return a set containing all words in the file [f] 
         private ISet<string> ExtractWordsInFile(FileInfo f)

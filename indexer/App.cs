@@ -11,7 +11,7 @@ namespace Indexer
         public void Run()
         {
 
-            IDatabase db = GetDatabase();
+            IIndexDatabase db = GetDatabase();
             Crawler crawler = new Crawler(db);
 
             var root = new DirectoryInfo(Config.FOLDER);
@@ -43,19 +43,19 @@ namespace Indexer
 
         }
 
-        private IDatabase GetDatabase()
+        private IIndexDatabase GetDatabase()
         {
             Console.Write("Use SQLite (1) or Postgres (2) database?");
             string input = Console.ReadLine();
             if (input.Equals("1"))
-                return new DatabaseSqlite();
+                return new Shared.DatabaseSqlite();
             else if (input.Equals("2"))
-                return new DatabasePostgres();
+                return new Shared.DatabasePostgres();
             Console.WriteLine("Wrong input - try again...");
             return GetDatabase();
         }
 
-        public void MostFrequentWords(int rows, IDatabase db)
+        public void MostFrequentWords(int rows, IIndexDatabase db)
         {
             var words = db.GetMostFrequent(rows);   
 
