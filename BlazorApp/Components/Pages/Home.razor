@@ -1,7 +1,39 @@
 ﻿@page "/"
+@rendermode InteractiveServer
 
-<PageTitle>Home</PageTitle>
+<PageTitle>Search</PageTitle>
 
-<h1>Hello, world!</h1>
+<div class="win95-window">
+	<div class="win95-title">Search <span>_ □ ×</span></div>
+	<div class="win95-body">
+		<h1>Document Search</h1>
+		<p>Type a word to search the index.</p>
+		<div class="win95-search">
+			<input @bind="query" @bind:event="oninput" @onkeydown="SearchOnEnter" autofocus />
+			<button @onclick="Search">Search</button>
+		</div>
+		@if (searched)
+		{
+			<p class="result-label">Results for <b>@query</b>:</p>
+			<ul>
+				@foreach (var result in results)
+				{
+					<li><a href="#">@result</a></li>
+				}
+			</ul>
+		}
+	</div>
+</div>
 
-Welcome to your new app.
+@code {
+	private string query = "";
+	private bool searched;
+	private readonly string[] results = { "project-notes.txt", "search-design.txt", "architecture.txt" };
+
+	private void Search() => searched = true;
+
+	private void SearchOnEnter(KeyboardEventArgs args)
+	{
+		if (args.Key == "Enter") Search();
+	}
+}
