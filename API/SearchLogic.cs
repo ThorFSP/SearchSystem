@@ -1,9 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿// DatabaseApi/SearchLogic.cs
+using System;
+using ConsoleSearch;
 using Shared;
 using Shared.Model;
 
-namespace ConsoleSearch
+namespace DatabaseApi
 {
     public class SearchLogic
     {
@@ -17,7 +18,7 @@ namespace ConsoleSearch
         /* Perform search of documents containing words from query. The result will
          * contain details about amost maxAmount of documents.
          */
-        public SearchResult Search(String[] query, int maxAmount, bool caseSensitive)
+        public SearchResult Search(string[] query, int maxAmount, bool caseSensitive)
         {
             List<string> ignored;
 
@@ -27,11 +28,12 @@ namespace ConsoleSearch
             var wordIds = mDatabase.GetWordIds(query, out ignored, caseSensitive);
 
             if (wordIds.Count == 0) // no words know in index
-                 return new SearchResult(query, 0, new List<DocumentHit>(), ignored, DateTime.Now - start);
-            // perform the search - get all docIds
-            var docIds =  mDatabase.GetDocuments(wordIds);
+                return new SearchResult(query, 0, new List<DocumentHit>(), ignored, DateTime.Now - start);
 
-            // get ids for the first maxAmount             
+            // perform the search - get all docIds
+            var docIds = mDatabase.GetDocuments(wordIds);
+
+            // get ids for the first maxAmount
             var top = new List<int>();
             foreach (var p in docIds.GetRange(0, Math.Min(maxAmount, docIds.Count)))
                 top.Add(p.Key);

@@ -1,4 +1,5 @@
 ﻿using System;
+using SearchSystem.Shared.Model;
 using Shared;
 using Shared.Model;
 
