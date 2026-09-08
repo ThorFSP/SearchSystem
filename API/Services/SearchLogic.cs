@@ -3,9 +3,9 @@ using System;
 using Shared;
 using Shared.Model;
 
-namespace DatabaseApi
+namespace Api
 {
-    public class SearchLogic
+    public class SearchLogic : ISearchLogic
     {
         ISearchDatabase mDatabase;
 

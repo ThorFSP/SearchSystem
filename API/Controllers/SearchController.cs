@@ -3,24 +3,17 @@ using Microsoft.AspNetCore.Mvc;
 using Shared;
 using Shared.Model;
 
-namespace DatabaseApi.Controllers
+namespace Api.Controllers
 {
-    public class SearchRequest
-    {
-        public string[] Query { get; set; }
-        public int MaxAmount { get; set; } = 10;
-        public bool CaseSensitive { get; set; } = false;
-    }
-
     [ApiController]
     [Route("api/search")]
     public class SearchController : ControllerBase
     {
-        private readonly SearchLogic mSearchLogic;
+        private readonly ISearchLogic mSearchLogic;
 
-        public SearchController(ISearchDatabase database)
+        public SearchController(ISearchLogic searchLogic)
         {
-            mSearchLogic = new SearchLogic(database);
+            mSearchLogic = searchLogic;
         }
 
         [HttpPost]
