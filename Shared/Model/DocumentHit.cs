@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using Shared.Model;
 
-namespace ConsoleSearch
+namespace Shared.Model
 {
     public class DocumentHit
     {

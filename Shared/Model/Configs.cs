@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace SearchSystem.Shared.Model
+namespace Shared.Model
 {
     public class Configs
     {
