@@ -23,18 +23,14 @@ namespace Shared
 
             _connection.Open();
 
-            Execute("DROP TABLE IF EXISTS Occ");
+                Execute("CREATE TABLE IF NOT EXISTS document(id INTEGER PRIMARY KEY, url TEXT, idxTime TEXT, creationTime TEXT)");
 
-            Execute("DROP TABLE IF EXISTS document");
-            Execute("CREATE TABLE document(id INTEGER PRIMARY KEY, url TEXT, idxTime TEXT, creationTime TEXT)");
+                Execute("CREATE TABLE IF NOT EXISTS word(id INTEGER PRIMARY KEY, name VARCHAR(50))");
 
-            Execute("DROP TABLE IF EXISTS word");
-            Execute("CREATE TABLE word(id INTEGER PRIMARY KEY, name VARCHAR(50))");
-
-            Execute("CREATE TABLE Occ(wordId INTEGER, docId INTEGER, "
+                Execute("CREATE TABLE IF NOT EXISTS Occ(wordId INTEGER, docId INTEGER, "
                     + "FOREIGN KEY (wordId) REFERENCES word(id), "
                     + "FOREIGN KEY (docId) REFERENCES document(id))");
-            Execute("CREATE INDEX word_index ON Occ (wordId)");
+                Execute("CREATE INDEX IF NOT EXISTS word_index ON Occ (wordId)");
         }
 
         private void Execute(string sql)

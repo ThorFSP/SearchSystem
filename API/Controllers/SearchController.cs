@@ -1,5 +1,4 @@
 // DatabaseApi/Controllers/SearchController.cs
-using ConsoleSearch;
 using Microsoft.AspNetCore.Mvc;
 using Shared;
 using Shared.Model;

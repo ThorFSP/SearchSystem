@@ -1,5 +1,8 @@
 ﻿@page "/"
 @rendermode InteractiveServer
+@inject ISearchClient SearchClient
+@inject ILogger<Home> Logger
+@using Shared.Model
 
 <PageTitle>Search</PageTitle>
 
@@ -9,31 +12,61 @@
 		<h1>Document Search</h1>
 		<p>Type a word to search the index.</p>
 		<div class="win95-search">
-			<input @bind="query" @bind:event="oninput" @onkeydown="SearchOnEnter" autofocus />
+			<input @bind="query" @bind:event="oninput" autofocus />
 			<button @onclick="Search">Search</button>
 		</div>
-		@if (searched)
+		@if (errorMessage is not null)
+		{
+			<p class="result-label">@errorMessage</p>
+		}
+		@if (results is not null)
 		{
 			<p class="result-label">Results for <b>@query</b>:</p>
-			<ul>
-				@foreach (var result in results)
+			<p>Hits: @results.Hits | Documents: @results.DocumentHits.Count</p>
+			@if (results.Ignored.Count > 0)
+			{
+				<p>Ignored: @string.Join(", ", results.Ignored)</p>
+			}
+			@if (results.DocumentHits.Count == 0)
+			{
+				<p>No matching documents found.</p>
+			}
+			else
+			{
+				<ul>
+				@foreach (var result in results.DocumentHits)
 				{
-					<li><a href="#">@result</a></li>
+					<li><a href="@result.Document.mUrl">@result.Document.mUrl</a></li>
 				}
-			</ul>
+				</ul>
+			}
 		}
 	</div>
 </div>
 
 @code {
 	private string query = "";
-	private bool searched;
-	private readonly string[] results = { "project-notes.txt", "search-design.txt", "architecture.txt" };
+	private SearchResult? results;
+	private string? errorMessage;
 
-	private void Search() => searched = true;
-
-	private void SearchOnEnter(KeyboardEventArgs args)
+	private async Task Search()
 	{
-		if (args.Key == "Enter") Search();
+		if (string.IsNullOrWhiteSpace(query))
+		{
+			return;
+		}
+
+		errorMessage = null;
+
+		try
+		{
+			results = await SearchClient.Search(new[] { query }, 10, false);
+		}
+		catch (Exception exception)
+		{
+			results = null;
+			errorMessage = "The search service is unavailable.";
+			Logger.LogError(exception, "Search request failed for query {Query}", query);
+		}
 	}
 }

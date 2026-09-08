@@ -1,6 +1,5 @@
 ﻿// DatabaseApi/SearchLogic.cs
 using System;
-using ConsoleSearch;
 using Shared;
 using Shared.Model;
 

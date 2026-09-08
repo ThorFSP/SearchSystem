@@ -1,7 +1,9 @@
 public static class SearchClientFactory
 {
-    public static ISearchClient Create(string baseUrl = "http://localhost:5081")
+    private const string ApiBaseUrl = "http://localhost:5081";
+
+    public static ISearchClient Create()
     {
-        return new SearchClient(baseUrl);
+        return new SearchClient(ApiBaseUrl);
     }
 }
