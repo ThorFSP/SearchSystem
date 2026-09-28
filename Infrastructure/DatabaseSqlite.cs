@@ -5,19 +5,23 @@ using Microsoft.Data.Sqlite;
 
 namespace Shared
 {
-    public class DatabaseSqlite : ISearchDatabase, IIndexDatabase
+    public class DatabaseSqlite : ISearchDatabase, IIndexDatabase, IDisposable
     {
         private SqliteConnection _connection;
 
         private Dictionary<string, int> mWords = null;
         private Dictionary<string, List<int>> mWordsIgnoreCase = null;
 
-        public DatabaseSqlite()
+        public DatabaseSqlite() : this(Paths.SQLITE_DATABASE)
+        {
+        }
+
+        public DatabaseSqlite(string databasePath)
         {
             var connectionStringBuilder = new SqliteConnectionStringBuilder();
 
             connectionStringBuilder.Mode = SqliteOpenMode.ReadWriteCreate;
-            connectionStringBuilder.DataSource = Paths.SQLITE_DATABASE;
+            connectionStringBuilder.DataSource = databasePath;
 
             _connection = new SqliteConnection(connectionStringBuilder.ConnectionString);
 
@@ -31,6 +35,11 @@ namespace Shared
                     + "FOREIGN KEY (wordId) REFERENCES word(id), "
                     + "FOREIGN KEY (docId) REFERENCES document(id))");
                 Execute("CREATE INDEX IF NOT EXISTS word_index ON Occ (wordId)");
+        }
+
+        public void Dispose()
+        {
+            _connection.Dispose();
         }
 
         private void Execute(string sql)

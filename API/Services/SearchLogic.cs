@@ -7,11 +7,14 @@ namespace Api
 {
     public class SearchLogic : ISearchLogic
     {
-        ISearchDatabase mDatabase;
+        private readonly IReadOnlyList<ISearchDatabase> mDatabases;
 
-        public SearchLogic(ISearchDatabase database)
+        public SearchLogic(IReadOnlyList<ISearchDatabase> databases)
         {
-            mDatabase = database;
+            if (databases.Count == 0)
+                throw new ArgumentException("At least one search database is required.", nameof(databases));
+
+            mDatabases = databases;
         }
 
         /* Perform search of documents containing words from query. The result will
@@ -23,33 +26,45 @@ namespace Api
 
             DateTime start = DateTime.Now;
 
-            // Convert words to wordids
-            var wordIds = mDatabase.GetWordIds(query, out ignored, caseSensitive);
+            var hitsByDocument = new Dictionary<int, (ISearchDatabase Database, int Score, List<int> WordIds)>();
+            var ignoredByShard = new List<List<string>>();
 
-            if (wordIds.Count == 0) // no words know in index
-                return new SearchResult(query, 0, new List<DocumentHit>(), ignored, DateTime.Now - start);
-
-            // perform the search - get all docIds
-            var docIds = mDatabase.GetDocuments(wordIds);
-
-            // get ids for the first maxAmount
-            var top = new List<int>();
-            foreach (var p in docIds.GetRange(0, Math.Min(maxAmount, docIds.Count)))
-                top.Add(p.Key);
-
-            // compose the result.
-            // all the documentHit
-            List<DocumentHit> docresult = new List<DocumentHit>();
-            int idx = 0;
-            foreach (var docId in top)
+            foreach (var database in mDatabases)
             {
-                BEDocument doc = mDatabase.GetDocDetails(docId);
-                var missing = mDatabase.WordsFromIds(mDatabase.getMissing(doc.mId, wordIds));
-                missing.AddRange(ignored);
-                docresult.Add(new DocumentHit(doc, docIds[idx++].Value, missing));
+                var wordIds = database.GetWordIds(query, out var shardIgnored, caseSensitive);
+                ignoredByShard.Add(shardIgnored);
+
+                if (wordIds.Count == 0)
+                    continue;
+
+                foreach (var hit in database.GetDocuments(wordIds))
+                {
+                    if (!hitsByDocument.TryAdd(hit.Key, (database, hit.Value, wordIds)))
+                        throw new InvalidOperationException($"Document {hit.Key} is indexed in more than one search database.");
+                }
             }
 
-            return new SearchResult(query, docIds.Count, docresult, ignored, DateTime.Now - start);
+            ignored = query
+                .Where(word => ignoredByShard.All(shardIgnored => shardIgnored.Contains(word)))
+                .Distinct()
+                .ToList();
+
+            var top = hitsByDocument
+                .OrderByDescending(hit => hit.Value.Score)
+                .ThenBy(hit => hit.Key)
+                .Take(Math.Max(0, maxAmount));
+
+            var docresult = new List<DocumentHit>();
+            foreach (var hit in top)
+            {
+                var database = hit.Value.Database;
+                var doc = database.GetDocDetails(hit.Key);
+                var missing = database.WordsFromIds(database.getMissing(hit.Key, hit.Value.WordIds));
+                missing.AddRange(ignored);
+                docresult.Add(new DocumentHit(doc, hit.Value.Score, missing));
+            }
+
+            return new SearchResult(query, hitsByDocument.Count, docresult, ignored, DateTime.Now - start);
         }
     }
 }

@@ -3,8 +3,8 @@ using Api;
 
 public static class SearchLogicFactory
 {
-    public static ISearchLogic Create(ISearchDatabase database)
+    public static ISearchLogic Create(IReadOnlyList<ISearchDatabase> databases)
     {
-        return new SearchLogic(database);
+        return new SearchLogic(databases);
     }
 }
