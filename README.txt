@@ -21,5 +21,28 @@ and the ConsoleSearch. It contains:
 the search program (read-only).
 - BEDocument (BE for Business Entity) - a class representing a document.
 
+Containerized setup
+-------------------
+Start the complete search system and observability stack with:
+
+	docker compose up --build
+
+Open the web application at http://localhost:5002 and Grafana at
+http://localhost:3000. The Gateway is available at http://localhost:5000.
+
+API, Gateway and WebApp use NLog and send structured JSON logs directly to Loki
+while also writing them to stdout. Grafana is provisioned with Loki as its
+default datasource. In Grafana Explore, use this query to see the logs:
+
+	{service=~"api-1|api-2|gateway|webapp"}
+
+For errors, use:
+
+	{service=~"api-1|api-2|gateway|webapp"} | json | level="ERROR"
+
+The API runs as two replicas behind the Gateway, with SQLite stored in the
+shared Docker volume search-data. The local PowerShell launcher remains
+available for running the .NET processes without Docker.
+
 
 

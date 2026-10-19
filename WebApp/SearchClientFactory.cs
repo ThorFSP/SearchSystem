@@ -1,9 +1,9 @@
 public static class SearchClientFactory
 {
-    private const string ApiBaseUrl = "http://localhost:5000";
-
     public static ISearchClient Create()
     {
-        return new SearchClient(ApiBaseUrl);
+        var baseUrl = Environment.GetEnvironmentVariable("SEARCH_API_BASE_URL")
+            ?? "http://localhost:5000";
+        return new SearchClient(baseUrl);
     }
 }

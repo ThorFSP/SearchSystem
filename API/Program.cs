@@ -1,7 +1,10 @@
 using Shared;
 using Api;
+using NLog.Web;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Logging.ClearProviders();
+builder.Host.UseNLog();
 
 var shardPaths = builder.Configuration
 	.GetSection("Search:ShardDatabasePaths")
