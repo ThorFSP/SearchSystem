@@ -21,7 +21,14 @@ builder.Services.AddScoped<IIndexDatabase, DatabaseSqlite>();
 builder.Services.AddScoped<ISearchLogic>(services =>
 	SearchLogicFactory.Create(services.GetRequiredService<IReadOnlyList<ISearchDatabase>>()));
 
-// Kan i fremtiden tilføjes 
+// Initialisering af OpenTelemetry 
+builder.Services.AddOpenTelemetry()
+	.WithMetrics(metrics =>
+	{
+		
+	});
+
+// Kan i fremtiden tilføjes anden database
 // builder.Services.AddScoped<ISearchDatabase, DatabasePostgres>();
 // builder.Services.AddScoped<IIndexDatabase, DatabasePostgres>(); 
 
