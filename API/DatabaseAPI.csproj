@@ -8,14 +8,23 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.0" />
+<<<<<<< HEAD
     <PackageReference Include="OpenTelemetry.Exporter.Console" Version="1.20.0" />
     <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.20.0" />
     <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.20.0" />
+=======
+    <PackageReference Include="NLog.Web.AspNetCore" Version="6.0.5" />
+    <PackageReference Include="NLog.Targets.Loki" Version="2.7.2" />
+>>>>>>> 6b690f68b3226fe24e9694427dd80edb4c73390a
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Shared\Shared.csproj" />
     <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="NLog.config" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>
